@@ -44,33 +44,25 @@
             display: flex; flex-direction: column;
         }
 
-        /* 狀態卡 */
         .card { padding: 20px; text-align: center; flex-shrink: 0; }
         .pig-stage-container { height: 110px; display: flex; align-items: center; justify-content: center; }
         #pig-visual { font-size: 75px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: pig-float 3s ease-in-out infinite; }
-        @keyframes pig-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        @keyframes pig-float { 0%, 80% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         #stage-text { background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; color: var(--gold); margin-top: 5px; display: inline-block; border: 1px solid rgba(255,215,0,0.3); }
         .current-amount { font-size: 3rem; font-weight: bold; color: var(--success); margin: 10px 0; text-shadow: 0 0 15px rgba(0,255,136,0.3); }
         
-        /* 加粗後的進度條 */
         .progress-wrapper { 
-            background: var(--bar-bg); 
-            height: 24px; /* 從 10px 增加到 24px */
-            border-radius: 12px; 
-            overflow: hidden; 
-            margin: 15px 0; 
-            border: 2px solid rgba(255,255,255,0.1);
+            background: var(--bar-bg); height: 24px; border-radius: 12px; 
+            overflow: hidden; margin: 15px 0; border: 2px solid rgba(255,255,255,0.1);
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
         }
         .progress-fill { 
             background: linear-gradient(90deg, #ff8c00, #ffd700, #00ff88); 
-            width: 0%; height: 100%; 
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); 
+            width: 0%; height: 100%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); 
             box-shadow: 0 0 15px rgba(255,215,0,0.4);
         }
 
-        /* 輸入區 */
-        .input-group { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; margin-top: 10px; }
+        .input-group { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; margin-top: 10px; transition: 0.3s; }
         .inputs-row { display: flex; gap: 8px; }
         
         input { 
@@ -79,12 +71,15 @@
             flex: 1; font-size: 1.2rem; text-align: center; font-weight: bold;
             appearance: none; -moz-appearance: textfield;
         }
+        /* 達標後的輸入框樣式 */
+        input:disabled { border-color: #444; color: #666; background: #111; opacity: 0.6; }
+
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         .btn-add { background: var(--gold); color: #000; border: none; padding: 0 25px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); background: #fff; }
+        .btn-add:disabled { background: #333; color: #777; transform: none; }
 
-        /* 日誌區 */
         .history-panel { flex: 1; overflow: hidden; margin-top: 5px; }
         .history-header { padding: 15px 20px; background: rgba(0,0,0,0.2); font-weight: bold; color: var(--gold); display: flex; justify-content: space-between; align-items: center; }
         .history-list { flex: 1; overflow-y: auto; padding: 10px; list-style: none; margin: 0; -webkit-overflow-scrolling: touch; }
@@ -100,7 +95,7 @@
 </head>
 <body>
 
-    <div id="loading" class="loading-overlay">🛡️ 同步豬仔數據中...</div>
+    <div id="loading" class="loading-overlay">🛡️ 同步數據中...</div>
     <canvas id="confetti-canvas"></canvas>
 
     <div class="main-container">
@@ -112,11 +107,11 @@
             
             <div class="progress-wrapper"><div class="progress-fill" id="bar"></div></div>
             <div style="display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.5; margin-top: -10px; padding: 0 5px;">
-                <span>LV.START</span>
+                <span>LV.1</span>
                 <span>GOAL $88,888</span>
             </div>
             
-            <div class="input-group">
+            <div class="input-group" id="input-container">
                 <div class="inputs-row">
                     <input type="number" id="money-input" placeholder="投入飼料" inputmode="numeric">
                     <button class="btn-add" id="btn-deposit">餵養</button>
@@ -159,8 +154,7 @@
                 const docSnap = await getDoc(userDocRef);
                 if (docSnap.exists()) userData = docSnap.data();
                 else await setDoc(userDocRef, userData);
-            } catch(e) { console.error("Firebase Error:", e); }
-            
+            } catch(e) { console.error(e); }
             document.getElementById('loading').style.opacity = '0';
             setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
             updateUI(false);
@@ -175,17 +169,27 @@
         }
 
         window.deposit = async function() {
+            if (userData.total >= target) return; // 再次檢查，防止極端情況
+
             const mInput = document.getElementById('money-input');
             const val = parseFloat(mInput.value);
             if (isNaN(val) || val <= 0) return;
 
             const now = new Date();
             const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
+            
+            // 達標計算
             userData.total = Math.min(userData.total + val, target);
             userData.history.unshift({ id: Date.now(), time: timeStr, amount: val, note: getMealType(val) });
 
             updateUI(true);
             mInput.value = '';
+            
+            // 達標後隱藏鍵盤
+            if (userData.total >= target) {
+                mInput.blur();
+            }
+            
             await updateDoc(userDocRef, { total: userData.total, history: userData.history });
         }
 
@@ -200,7 +204,7 @@
         }
 
         window.clearData = async function() {
-            if (!confirm("⚠️ 確定要清除所有存錢紀錄嗎？這無法復原喔！")) return;
+            if (!confirm("⚠️ 確定要全清嗎？")) return;
             userData = { total: 0, history: [], lastStage: 1 };
             updateUI(false);
             await setDoc(userDocRef, userData);
@@ -211,6 +215,22 @@
             let ratio = userData.total / target;
             document.getElementById('bar').style.width = (ratio * 100) + '%';
             
+            // 達標鎖定判斷
+            const mInput = document.getElementById('money-input');
+            const btnAdd = document.getElementById('btn-deposit');
+            
+            if (userData.total >= target) {
+                mInput.disabled = true;
+                btnAdd.disabled = true;
+                btnAdd.innerText = "已達標 🏆";
+                mInput.placeholder = "恭喜完成！";
+            } else {
+                mInput.disabled = false;
+                btnAdd.disabled = false;
+                btnAdd.innerText = "餵養";
+                mInput.placeholder = "投入飼料";
+            }
+
             let currentStage = Math.min(Math.floor(ratio * 12) + 1, 12);
             const stages = [
                 { e: '🐽', t: '小豬鼻子 (LV.1)' }, { e: '🐷', t: '粉紅幼豬 (LV.2)' },
@@ -227,7 +247,7 @@
             pig.style.fontSize = (55 + currentStage * 3) + 'px';
             document.getElementById('stage-text').innerText = s.t;
 
-            if (canCelebrate && currentStage > userData.lastStage) {
+            if (canCelebrate && (currentStage > userData.lastStage || userData.total >= target)) {
                 startConfetti();
                 pig.classList.add('level-up-flash');
                 setTimeout(() => pig.classList.remove('level-up-flash'), 1000);
@@ -239,17 +259,17 @@
 
         function renderHistory() {
             const list = document.getElementById('history-list');
-            list.innerHTML = userData.history.length ? '' : '<li style="text-align:center;padding-top:40px;opacity:0.2; font-size:0.9rem;">尚未開始餵養小豬...</li>';
+            list.innerHTML = userData.history.length ? '' : '<li style="text-align:center;padding-top:40px;opacity:0.2;">尚未開始...</li>';
             userData.history.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'history-item';
                 li.innerHTML = `
                     <button class="btn-delete-item" onclick="deleteItem(${item.id}, ${item.amount})">×</button>
                     <div style="display:flex; justify-content:space-between; font-weight:bold; padding-right:25px;">
-                        <span style="font-size:0.8rem; opacity:0.6; font-family:monospace;">${item.time}</span>
-                        <span style="color:var(--gold); letter-spacing:1px;">+$${item.amount.toLocaleString()}</span>
+                        <span style="font-size:0.8rem; opacity:0.6;">${item.time}</span>
+                        <span style="color:var(--gold)">+$${item.amount.toLocaleString()}</span>
                     </div>
-                    <div style="color:var(--success); font-size:0.85rem; margin-top:3px; font-weight:500;">${item.note}</div>`;
+                    <div style="color:var(--success); font-size:0.85rem; margin-top:3px;">${item.note}</div>`;
                 list.appendChild(li);
             });
         }
@@ -257,12 +277,11 @@
         document.getElementById('btn-deposit').onclick = deposit;
         loadData();
 
-        // 撒花特效
         let canvas = document.getElementById('confetti-canvas'), ctx = canvas.getContext('2d'), pieces = [], animId;
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
         window.onresize();
         function startConfetti() {
-            pieces = Array.from({length:60}, () => ({
+            pieces = Array.from({length:70}, () => ({
                 x: Math.random()*canvas.width, y: -20, r: Math.random()*360, 
                 c: ['#ffd700', '#00ff88', '#ff99cc', '#ffffff'][Math.floor(Math.random()*4)], 
                 s: Math.random()*6+4, sp: Math.random()*4+3, op: 1
