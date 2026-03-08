@@ -12,9 +12,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="養豬計畫">
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNCIgZmlsbD0iIzBGMEMyOSIvPjxlbGxpcHNlIGN4PSIyNTYiIGN5PSIyNTYiIHJ4PSIxNTAiIHJ5PSIxMDAiIHN0cm9rZT0iIzAwRkY4OCIgc3Ryb2tlLXdpZHRoPSIyMCIgZmlsbD0ibm9uZSIvPjx0ZXh0IHg9IjE3MCIgeT0iMjk1IiBmaWxsPSIjMDBGRjg4IiBmb250LXNpemU9IjEwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCI+JDwvdGV4dD48Y2lyY2xlIGN4PSIzMjEiIGN5PSIyNTYiIHI9IjI1IiBmaWxsPSIjMDBGRjg4Ii8+PC9zdmc+">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNCIgZmlsbD0iIzBGMEMyOSIvPjxlbGxpcHNlIGN4PSIyNTYiIGN5PSIyNTYiIHJ4PSIxNTAiIHJ5PSIxMDAiIHN0cm9rZT0iIzAwRkY4OCIgc3Ryb2tlLXdpZHRoPSIyMCIgZmlsbD0ibm9uZSIvPjx0ZXh0IHg9IjE3MCIgeT0iMjk1IiBmaWxsPSIjMDBGRjg4IiBmb250LXNpemU9IjEwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCI+JDwvdGV4dD48Y2lyY2xlIGN4PSIzMjEiIGN5PSIyNTYiIHI9IjI1IiBmaWxsPSIjMDBGRjg4Ii8+PC9zdmc+">
-
     <style>
         :root {
             --gold: #ffd700; --bg: #0f0c29; --bar-bg: #1e1e3f; --success: #00ff88;
@@ -47,7 +44,7 @@
         .card { padding: 20px; text-align: center; flex-shrink: 0; }
         .pig-stage-container { height: 110px; display: flex; align-items: center; justify-content: center; }
         #pig-visual { font-size: 75px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: pig-float 3s ease-in-out infinite; }
-        @keyframes pig-float { 0%, 50% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        @keyframes pig-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         #stage-text { background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; color: var(--gold); margin-top: 5px; display: inline-block; border: 1px solid rgba(255,215,0,0.3); }
         .current-amount { font-size: 3rem; font-weight: bold; color: var(--success); margin: 10px 0; text-shadow: 0 0 15px rgba(0,255,136,0.3); }
         
@@ -62,21 +59,44 @@
             box-shadow: 0 0 15px rgba(255,215,0,0.4);
         }
 
-        .input-group { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; margin-top: 10px; transition: 0.3s; }
-        .inputs-row { display: flex; gap: 8px; }
+        .input-group { 
+            background: rgba(0,0,0,0.2); 
+            padding: 12px; 
+            border-radius: 20px; 
+            margin: 10px auto 0 auto;
+            width: 80%;
+        }
+        .inputs-row { display: flex; gap: 8px; align-items: stretch; }
         
+        /* --- 徹底去除滾軸與按鈕 --- */
         input { 
             background: var(--bar-bg); border: 2px solid var(--gold); 
-            padding: 12px; border-radius: 12px; color: white; outline: none; 
-            flex: 1; font-size: 1.2rem; text-align: center; font-weight: bold;
-            appearance: none; -moz-appearance: textfield;
+            padding: 10px; border-radius: 12px; color: white; outline: none; 
+            flex: 1; font-size: 1.1rem; text-align: center; font-weight: bold;
+            min-width: 0;
+            overflow: hidden; /* 防止內部溢出出現滾軸 */
+            line-height: normal;
         }
-        /* 達標後的輸入框樣式 */
+
+        /* 隱藏 Chrome, Safari, Edge 的上下小箭頭 */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* 隱藏 Firefox 的上下小箭頭 */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
         input:disabled { border-color: #444; color: #666; background: #111; opacity: 0.6; }
 
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-        .btn-add { background: var(--gold); color: #000; border: none; padding: 0 25px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; transition: 0.2s; }
+        .btn-add { 
+            background: var(--gold); color: #000; border: none; 
+            padding: 0 18px; border-radius: 12px; font-weight: bold; 
+            font-size: 1rem; transition: 0.2s; white-space: nowrap;
+        }
         .btn-add:active { transform: scale(0.95); background: #fff; }
         .btn-add:disabled { background: #333; color: #777; transform: none; }
 
@@ -85,12 +105,10 @@
         .history-list { flex: 1; overflow-y: auto; padding: 10px; list-style: none; margin: 0; -webkit-overflow-scrolling: touch; }
         .history-item { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
+       
         .btn-delete-item { position: absolute; right: 10px; top: 12px; background: none; border: none; color: #555; font-size: 1.2rem; padding: 5px; }
         
         .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: 0.5s; font-weight: bold; letter-spacing: 2px; }
-        .level-up-flash { animation: glow 1s; }
-        @keyframes glow { 50% { filter: brightness(2) drop-shadow(0 0 30px var(--gold)); } }
     </style>
 </head>
 <body>
@@ -111,7 +129,7 @@
                 <span>GOAL $88,888</span>
             </div>
             
-            <div class="input-group" id="input-container">
+            <div class="input-group">
                 <div class="inputs-row">
                     <input type="number" id="money-input" placeholder="投入飼料" inputmode="numeric">
                     <button class="btn-add" id="btn-deposit">餵養</button>
@@ -129,6 +147,7 @@
     </div>
 
     <script type="module">
+        // Firebase 與邏輯代碼保持一致，確保功能完整...
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -169,32 +188,24 @@
         }
 
         window.deposit = async function() {
-            if (userData.total >= target) return; // 再次檢查，防止極端情況
-
+            if (userData.total >= target) return;
             const mInput = document.getElementById('money-input');
             const val = parseFloat(mInput.value);
             if (isNaN(val) || val <= 0) return;
 
             const now = new Date();
             const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
-            
-            // 達標計算
             userData.total = Math.min(userData.total + val, target);
             userData.history.unshift({ id: Date.now(), time: timeStr, amount: val, note: getMealType(val) });
 
             updateUI(true);
             mInput.value = '';
-            
-            // 達標後隱藏鍵盤
-            if (userData.total >= target) {
-                mInput.blur();
-            }
-            
+            if (userData.total >= target) mInput.blur();
             await updateDoc(userDocRef, { total: userData.total, history: userData.history });
         }
 
         window.deleteItem = async function(id, amount) {
-            if (!confirm(`要收回這筆 $${amount.toLocaleString()} 嗎？`)) return;
+            if (!confirm(`要收回這筆飼料 $${amount.toLocaleString()} 嗎？`)) return;
             userData.history = userData.history.filter(item => item.id !== id);
             userData.total = Math.max(0, userData.total - amount);
             let ratio = userData.total / target;
@@ -204,7 +215,7 @@
         }
 
         window.clearData = async function() {
-            if (!confirm("⚠️ 確定要全清嗎？")) return;
+            if (!confirm("⚠️ 確定要殺掉豬豬嗎？")) return;
             userData = { total: 0, history: [], lastStage: 1 };
             updateUI(false);
             await setDoc(userDocRef, userData);
@@ -215,20 +226,19 @@
             let ratio = userData.total / target;
             document.getElementById('bar').style.width = (ratio * 100) + '%';
             
-            // 達標鎖定判斷
             const mInput = document.getElementById('money-input');
             const btnAdd = document.getElementById('btn-deposit');
             
             if (userData.total >= target) {
                 mInput.disabled = true;
                 btnAdd.disabled = true;
-                btnAdd.innerText = "已達標 🏆";
-                mInput.placeholder = "恭喜完成！";
+                btnAdd.innerText = "完成 🏆";
+                mInput.placeholder = "達成";
             } else {
                 mInput.disabled = false;
                 btnAdd.disabled = false;
                 btnAdd.innerText = "餵養";
-                mInput.placeholder = "投入飼料";
+                mInput.placeholder = "金額";
             }
 
             let currentStage = Math.min(Math.floor(ratio * 12) + 1, 12);
@@ -249,8 +259,6 @@
 
             if (canCelebrate && (currentStage > userData.lastStage || userData.total >= target)) {
                 startConfetti();
-                pig.classList.add('level-up-flash');
-                setTimeout(() => pig.classList.remove('level-up-flash'), 1000);
                 userData.lastStage = currentStage;
                 updateDoc(userDocRef, { lastStage: currentStage });
             }
@@ -301,4 +309,3 @@
     </script>
 </body>
 </html>
-
