@@ -1,146 +1,133 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head>
-    
-
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head> 
+    <link rel="apple-touch-icon" href="savings.png">
+    <link rel="icon" type="image/png" href="savings.png">   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>養豬計畫</title>
-<link rel="icon" type="image/svg+xml" href="icon.svg">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="manifest" href="manifest.json">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="養豬計畫">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNCIgZmlsbD0iIzBGMEMyOSIvPjxlbGxpcHNlIGN4PSIyNTYiIGN5PSIyNTYiIHJ4PSIxNTAiIHJ5PSIxMDAiIHN0cm9rZT0iIzAwRkY4OCIgc3Ryb2tlLXdpZHRoPSIyMCIgZmlsbD0ibm9uZSIvPjx0ZXh0IHg9IjE3MCIgeT0iMjk1IiBmaWxsPSIjMDBGRjg4IiBmb250LXNpemU9IjEwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCI+JDwvdGV4dD48Y2lyY2xlIGN4PSIzMjEiIGN5PSIyNTYiIHI9IjI1IiBmaWxsPSIjMDBGRjg4Ii8+PC9zdmc+">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNCIgZmlsbD0iIzBGMEMyOSIvPjxlbGxpcHNlIGN4PSIyNTYiIGN5PSIyNTYiIHJ4PSIxNTAiIHJ5PSIxMDAiIHN0cm9rZT0iIzAwRkY4OCIgc3Ryb2tlLXdpZHRoPSIyMCIgZmlsbD0ibm9uZSIvPjx0ZXh0IHg9IjE3MCIgeT0iMjk1IiBmaWxsPSIjMDBGRjg4IiBmb250LXNpemU9IjEwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCI+JDwvdGV4dD48Y2lyY2xlIGN4PSIzMjEiIGN5PSIyNTYiIHI9IjI1IiBmaWxsPSIjMDBGRjg4Ii8+PC9zdmc+">
+
     <style>
         :root {
             --gold: #ffd700; --bg: #0f0c29; --bar-bg: #1e1e3f; --success: #00ff88;
             --danger: #ff4d4d;
             --panel-bg: rgba(255, 255, 255, 0.08);
-            --card-height: 600px; 
         }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             color: white; font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; margin: 0; overflow-x: hidden;
+            margin: 0; padding: 0; display: flex; justify-content: center;
+            height: 100vh; overflow: hidden;
         }
+
         #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
         
         .main-container { 
-            display: flex; gap: 25px; max-width: 1000px; width: 95%; z-index: 10; 
-            align-items: stretch; flex-wrap: wrap; justify-content: center;
+            width: 100%; max-width: 500px; height: 100%;
+            display: flex; flex-direction: column; gap: 12px; padding: 12px; z-index: 10;
         }
         
         .glass-panel {
             background: var(--panel-bg); border-radius: 24px;
             backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            height: var(--card-height); display: flex; flex-direction: column;
+            display: flex; flex-direction: column;
         }
 
-        .card { flex: 1.3; min-width: 350px; padding: 30px; text-align: center; box-sizing: border-box; }
-        .history-panel { flex: 1; min-width: 320px; overflow: hidden; position: relative; }
-
-        .pig-stage-container {
-            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 10px 0;
-        }
-        #pig-visual {
-            font-size: 80px; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: drop-shadow(0 0 15px rgba(255,153,204,0.3));
-            animation: pig-float 3s ease-in-out infinite;
-        }
+        /* 狀態卡 */
+        .card { padding: 20px; text-align: center; flex-shrink: 0; }
+        .pig-stage-container { height: 110px; display: flex; align-items: center; justify-content: center; }
+        #pig-visual { font-size: 75px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: pig-float 3s ease-in-out infinite; }
         @keyframes pig-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        #stage-text { background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; color: var(--gold); margin-top: 5px; display: inline-block; border: 1px solid rgba(255,215,0,0.3); }
+        .current-amount { font-size: 3rem; font-weight: bold; color: var(--success); margin: 10px 0; text-shadow: 0 0 15px rgba(0,255,136,0.3); }
         
-        #stage-text {
-            background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px;
-            font-size: 0.85rem; color: var(--gold); margin-top: 15px; border: 1px solid rgba(255,215,0,0.2);
+        /* 加粗後的進度條 */
+        .progress-wrapper { 
+            background: var(--bar-bg); 
+            height: 24px; /* 從 10px 增加到 24px */
+            border-radius: 12px; 
+            overflow: hidden; 
+            margin: 15px 0; 
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .progress-fill { 
+            background: linear-gradient(90deg, #ff8c00, #ffd700, #00ff88); 
+            width: 0%; height: 100%; 
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 0 15px rgba(255,215,0,0.4);
         }
 
-        .current-amount { font-size: 3rem; font-weight: bold; color: var(--success); margin: 10px 0; }
-        .progress-wrapper { background: var(--bar-bg); height: 20px; border-radius: 10px; margin-bottom: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
-        .progress-fill { background: linear-gradient(90deg, #ff8c00, #ffd700, #00ff88); width: 0%; height: 100%; transition: width 1s ease; }
-
-        .input-group { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 18px; }
-        .inputs-row { display: flex; gap: 10px; align-items: center; width: 100%; }
+        /* 輸入區 */
+        .input-group { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; margin-top: 10px; }
+        .inputs-row { display: flex; gap: 8px; }
         
         input { 
             background: var(--bar-bg); border: 2px solid var(--gold); 
-            padding: 14px; border-radius: 12px; color: white; outline: none; 
+            padding: 12px; border-radius: 12px; color: white; outline: none; 
             flex: 1; font-size: 1.2rem; text-align: center; font-weight: bold;
+            appearance: none; -moz-appearance: textfield;
         }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        .btn-add { 
-            background: var(--gold); color: #000; border: none; padding: 14px 25px; 
-            border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; 
-            font-size: 1.1rem; white-space: nowrap;
-        }
-        .btn-add:hover { background: #fff; transform: scale(1.02); }
+        .btn-add { background: var(--gold); color: #000; border: none; padding: 0 25px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; transition: 0.2s; }
+        .btn-add:active { transform: scale(0.95); background: #fff; }
 
-        /* 日誌標題與按鈕 */
-        .history-header { 
-            padding: 20px; background: rgba(0,0,0,0.3); font-weight: bold; color: var(--gold); 
-            text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .btn-clear {
-            background: rgba(255, 77, 77, 0.1); color: var(--danger); border: 1px solid var(--danger);
-            padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; opacity: 0.6;
-        }
-        .btn-clear:hover { opacity: 1; background: var(--danger); color: white; }
-
-        .history-list { flex: 1; overflow-y: auto; padding: 15px; list-style: none; margin: 0; }
+        /* 日誌區 */
+        .history-panel { flex: 1; overflow: hidden; margin-top: 5px; }
+        .history-header { padding: 15px 20px; background: rgba(0,0,0,0.2); font-weight: bold; color: var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .history-list { flex: 1; overflow-y: auto; padding: 10px; list-style: none; margin: 0; -webkit-overflow-scrolling: touch; }
+        .history-item { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* 紀錄單項樣式優化 */
-        .history-item { 
-            padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); 
-            display: flex; flex-direction: column; gap: 4px; position: relative;
-        }
-        .item-top { display: flex; justify-content: space-between; font-weight: bold; padding-right: 25px; }
-        .item-note { color: #00ff88; font-size: 0.85rem; font-weight: 500; }
+        .btn-delete-item { position: absolute; right: 10px; top: 12px; background: none; border: none; color: #555; font-size: 1.2rem; padding: 5px; }
         
-        /* 單筆刪除按鈕 (×) */
-        .btn-delete-item {
-            position: absolute; right: 10px; top: 12px;
-            background: none; border: none; color: #555; font-size: 1.2rem;
-            cursor: pointer; transition: 0.2s; line-height: 1;
-        }
-        .btn-delete-item:hover { color: var(--danger); transform: scale(1.2); }
-
-        .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: 0.5s; }
-        .level-up-flash { animation: glow 1s ease-out; }
-        @keyframes glow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(2) drop-shadow(0 0 30px var(--gold)); } }
+        .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: 0.5s; font-weight: bold; letter-spacing: 2px; }
+        .level-up-flash { animation: glow 1s; }
+        @keyframes glow { 50% { filter: brightness(2) drop-shadow(0 0 30px var(--gold)); } }
     </style>
 </head>
 <body>
 
-    <div id="loading" class="loading-overlay">🛡️ 同步冒險紀錄中...</div>
+    <div id="loading" class="loading-overlay">🛡️ 同步豬仔數據中...</div>
     <canvas id="confetti-canvas"></canvas>
 
     <div class="main-container">
         <div class="glass-panel card">
-            <h2 style="margin:0; letter-spacing: 2px;">💰 養豬計畫 💰</h2>
-            
-            <div class="pig-stage-container">
-                <div id="pig-visual">🐖</div>
-                <div id="stage-text">載入中...</div>
-            </div>
-
+            <h2 style="margin:0 0 10px 0; font-size: 1.2rem; letter-spacing: 3px; opacity: 0.9;">💰 養豬計畫 💰</h2>
+            <div class="pig-stage-container"><div id="pig-visual">🐖</div></div>
+            <div id="stage-text">載入中...</div>
             <div class="current-amount" id="total-display">$ 0</div>
-            <p style="color: #888; font-size: 0.8rem; margin-bottom: 10px;">目標進度：$88,888</p>
             
             <div class="progress-wrapper"><div class="progress-fill" id="bar"></div></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.5; margin-top: -10px; padding: 0 5px;">
+                <span>LV.START</span>
+                <span>GOAL $88,888</span>
+            </div>
             
             <div class="input-group">
                 <div class="inputs-row">
-                    <input type="number" id="money-input" placeholder="輸入存入金額">
-                    <button class="btn-add" id="btn-deposit">餵食小豬</button>
+                    <input type="number" id="money-input" placeholder="投入飼料" inputmode="numeric">
+                    <button class="btn-add" id="btn-deposit">餵養</button>
                 </div>
             </div>
         </div>
 
         <div class="glass-panel history-panel">
             <div class="history-header">
-                <span style="margin-left: 10px;">📜 豬仔日誌</span>
-                <button class="btn-clear" id="btn-clear-data">全清</button>
+                <span>📜 豬仔日誌</span>
+                <button onclick="clearData()" style="background:none; border:1px solid var(--danger); color:var(--danger); border-radius:8px; padding:4px 12px; font-size:0.75rem; font-weight: bold;">全清</button>
             </div>
             <ul class="history-list" id="history-list"></ul>
         </div>
@@ -168,9 +155,11 @@
         const target = 88888;
 
         async function loadData() {
-            const docSnap = await getDoc(userDocRef);
-            if (docSnap.exists()) userData = docSnap.data();
-            else await setDoc(userDocRef, userData);
+            try {
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) userData = docSnap.data();
+                else await setDoc(userDocRef, userData);
+            } catch(e) { console.error("Firebase Error:", e); }
             
             document.getElementById('loading').style.opacity = '0';
             setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
@@ -185,59 +174,44 @@
             return "👑 奢華滿漢全席";
         }
 
-        async function deposit() {
+        window.deposit = async function() {
             const mInput = document.getElementById('money-input');
             const val = parseFloat(mInput.value);
             if (isNaN(val) || val <= 0) return;
 
             const now = new Date();
             const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
-            const mealNote = getMealType(val);
-
             userData.total = Math.min(userData.total + val, target);
-            // 為每筆日誌增加一個隨機 ID 方便刪除
-            userData.history.unshift({ id: Date.now(), time: timeStr, amount: val, note: mealNote });
+            userData.history.unshift({ id: Date.now(), time: timeStr, amount: val, note: getMealType(val) });
 
-            await updateDoc(userDocRef, { total: userData.total, history: userData.history });
             updateUI(true);
             mInput.value = '';
+            await updateDoc(userDocRef, { total: userData.total, history: userData.history });
         }
 
-        // --- 單筆刪除功能 ---
-        async function deleteItem(id, amount) {
-            if (confirm(`確定要刪除這筆 $${amount.toLocaleString()} 的紀錄嗎？金額將會扣除。`)) {
-                userData.history = userData.history.filter(item => item.id !== id);
-                userData.total = Math.max(0, userData.total - amount);
-                
-                // 重新計算 lastStage 避免降級後不會再次觸發特效
-                let ratio = userData.total / target;
-                userData.lastStage = Math.floor(ratio * 12) + 1;
-
-                await updateDoc(userDocRef, { 
-                    total: userData.total, 
-                    history: userData.history,
-                    lastStage: userData.lastStage
-                });
-                updateUI(false);
-            }
+        window.deleteItem = async function(id, amount) {
+            if (!confirm(`要收回這筆 $${amount.toLocaleString()} 嗎？`)) return;
+            userData.history = userData.history.filter(item => item.id !== id);
+            userData.total = Math.max(0, userData.total - amount);
+            let ratio = userData.total / target;
+            userData.lastStage = Math.floor(ratio * 12) + 1;
+            updateUI(false);
+            await updateDoc(userDocRef, { total: userData.total, history: userData.history, lastStage: userData.lastStage });
         }
 
-        async function clearData() {
-            if (confirm("⚠️ 注意！這將重置所有紀錄。確定嗎？")) {
-                userData = { total: 0, history: [], lastStage: 1 };
-                await setDoc(userDocRef, userData);
-                updateUI(false);
-            }
+        window.clearData = async function() {
+            if (!confirm("⚠️ 確定要清除所有存錢紀錄嗎？這無法復原喔！")) return;
+            userData = { total: 0, history: [], lastStage: 1 };
+            updateUI(false);
+            await setDoc(userDocRef, userData);
         }
 
         function updateUI(canCelebrate) {
-            document.getElementById('total-display').innerText = '$ ' + userData.total.toLocaleString();
+            document.getElementById('total-display').innerText = '$' + userData.total.toLocaleString();
             let ratio = userData.total / target;
             document.getElementById('bar').style.width = (ratio * 100) + '%';
             
-            let currentStage = Math.floor(ratio * 12) + 1;
-            if (currentStage > 12) currentStage = 12;
-            
+            let currentStage = Math.min(Math.floor(ratio * 12) + 1, 12);
             const stages = [
                 { e: '🐽', t: '小豬鼻子 (LV.1)' }, { e: '🐷', t: '粉紅幼豬 (LV.2)' },
                 { e: '🐖', t: '成長小豬 (LV.3)' }, { e: '🐗', t: '野性山豬 (LV.4)' },
@@ -250,64 +224,55 @@
             const s = stages[currentStage - 1];
             const pig = document.getElementById('pig-visual');
             pig.innerText = s.e;
-            pig.style.fontSize = (50 + currentStage * 8) + 'px';
-            document.getElementById('stage-text').innerText = `階段 ${currentStage}/12：${s.t}`;
+            pig.style.fontSize = (55 + currentStage * 3) + 'px';
+            document.getElementById('stage-text').innerText = s.t;
 
             if (canCelebrate && currentStage > userData.lastStage) {
-                triggerLevelUp();
+                startConfetti();
+                pig.classList.add('level-up-flash');
+                setTimeout(() => pig.classList.remove('level-up-flash'), 1000);
                 userData.lastStage = currentStage;
                 updateDoc(userDocRef, { lastStage: currentStage });
             }
             renderHistory();
         }
 
-        function triggerLevelUp() {
-            startConfetti();
-            const pig = document.getElementById('pig-visual');
-            pig.classList.add('level-up-flash');
-            setTimeout(() => pig.classList.remove('level-up-flash'), 1000);
-        }
-
         function renderHistory() {
             const list = document.getElementById('history-list');
-            list.innerHTML = userData.history.length ? '' : '<li style="text-align:center;padding-top:50px;color:#555;">尚無紀錄</li>';
-            
+            list.innerHTML = userData.history.length ? '' : '<li style="text-align:center;padding-top:40px;opacity:0.2; font-size:0.9rem;">尚未開始餵養小豬...</li>';
             userData.history.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'history-item';
                 li.innerHTML = `
-                    <button class="btn-delete-item" title="刪除此筆">×</button>
-                    <div class="item-top">
-                        <span>${item.time}</span>
-                        <span style="color:var(--gold)">+$${item.amount.toLocaleString()}</span>
+                    <button class="btn-delete-item" onclick="deleteItem(${item.id}, ${item.amount})">×</button>
+                    <div style="display:flex; justify-content:space-between; font-weight:bold; padding-right:25px;">
+                        <span style="font-size:0.8rem; opacity:0.6; font-family:monospace;">${item.time}</span>
+                        <span style="color:var(--gold); letter-spacing:1px;">+$${item.amount.toLocaleString()}</span>
                     </div>
-                    <div class="item-note">${item.note}</div>`;
-                
-                // 綁定刪除事件
-                li.querySelector('.btn-delete-item').onclick = () => deleteItem(item.id, item.amount);
+                    <div style="color:var(--success); font-size:0.85rem; margin-top:3px; font-weight:500;">${item.note}</div>`;
                 list.appendChild(li);
             });
         }
 
-        document.getElementById('btn-deposit').addEventListener('click', deposit);
-        document.getElementById('btn-clear-data').addEventListener('click', clearData);
+        document.getElementById('btn-deposit').onclick = deposit;
         loadData();
 
-        // --- 特效代碼 ---
+        // 撒花特效
         let canvas = document.getElementById('confetti-canvas'), ctx = canvas.getContext('2d'), pieces = [], animId;
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
         window.onresize();
         function startConfetti() {
-            pieces = Array.from({length:100}, () => ({
+            pieces = Array.from({length:60}, () => ({
                 x: Math.random()*canvas.width, y: -20, r: Math.random()*360, 
-                c: '#ffd700', s: Math.random()*5+5, sp: Math.random()*4+2, op: 1
+                c: ['#ffd700', '#00ff88', '#ff99cc', '#ffffff'][Math.floor(Math.random()*4)], 
+                s: Math.random()*6+4, sp: Math.random()*4+3, op: 1
             }));
             cancelAnimationFrame(animId); animate();
         }
         function animate() {
             ctx.clearRect(0,0,canvas.width,canvas.height);
             pieces.forEach((p,i) => {
-                p.y += p.sp; p.op -= 0.005;
+                p.y += p.sp; p.op -= 0.008;
                 ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r*Math.PI/180);
                 ctx.globalAlpha = p.op; ctx.fillStyle = p.c; ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s); ctx.restore();
                 if(p.op <= 0) pieces.splice(i,1);
